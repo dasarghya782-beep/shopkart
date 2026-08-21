@@ -2,11 +2,13 @@ package com.shopkart.service;
 
 import com.shopkart.dto.ProductRequest;
 import com.shopkart.dto.ProductResponse;
+import com.shopkart.exception.InsufficientStockException;
 import com.shopkart.exception.ProductNotFoundException;
 import com.shopkart.mapper.ProductMapper;
 import com.shopkart.model.Product;
 import com.shopkart.repository.ProductRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -46,6 +48,17 @@ public class ProductService {
         Product product = productMapper.toEntity(request);
         Product savedProduct = productRepository.save(product);
         return productMapper.productResponse(savedProduct);
+    }
+
+    @Transactional
+    public void decrementProductStock(Long productid,int quantity){
+        Product product = productRepository.findById(productid)
+                .orElseThrow(()-> new ProductNotFoundException(productid));
+
+        if(product.getStock()<quantity){
+            throw new InsufficientStockException(productid,quantity);
+        }
+        product.setStock(product.getStock()-quantity);
     }
 
 }
