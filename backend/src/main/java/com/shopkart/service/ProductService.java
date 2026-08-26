@@ -55,10 +55,8 @@ public class ProductService {
         Product product = productRepository.findById(productid)
                 .orElseThrow(()-> new ProductNotFoundException(productid));
 
-        if(product.getStock()<quantity){
-            throw new InsufficientStockException(productid,quantity);
-        }
-        product.setStock(product.getStock()-quantity);
+        product.decreaseStock(quantity);
+
     }
 
 }

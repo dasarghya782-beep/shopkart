@@ -1,5 +1,6 @@
 package com.shopkart.model;
 
+import com.shopkart.exception.InsufficientStockException;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -79,5 +80,12 @@ public class Product {
                 ", stock=" + stock +
                 ", description='" + description + '\'' +
                 '}';
+    }
+
+    public void decreaseStock(int quantity){
+        if(stock<quantity){
+            throw new InsufficientStockException(id,quantity);
+        }
+        stock-=quantity;
     }
 }
